@@ -1,0 +1,475 @@
+/* line 3, ../sass/custom.scss */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: "Alegreya";
+  src: url("../fonts/AlegreyaSans-Regular-webfont.eot") format("eot"), url("../fonts/AlegreyaSans-Regular-webfont.woff") format("woff"), url("../fonts/AlegreyaSans-Regular-webfont.ttf") format("truetype"), url("../fonts/AlegreyaSans-Regular-webfont.svg") format("svg");
+}
+
+@font-face {
+  font-family: "TT-Bluescreens";
+  src: url("../fonts/TT-Bluescreens-Round-Bold.ttf") format("ttf");
+}
+
+html, body {
+  height: 100%;
+}
+
+/* line 16, ../sass/custom.scss */
+body {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  color: #333;
+  background: url("../images/crossword.png") repeat top center;
+}
+
+/* line 23, ../sass/custom.scss */
+a {
+  color: #525252;
+  text-decoration: none;
+}
+
+/* line 27, ../sass/custom.scss */
+a:hover {
+  color: #333;
+}
+
+a.blue, .social a{
+  color: #164b7d;
+}
+
+a.blue:hover{
+  text-decoration: underline;
+}
+
+/* line 31, ../sass/custom.scss */
+img {
+  border: none;
+}
+
+/* line 35, ../sass/custom.scss */
+p {
+  margin-bottom: 20px;
+  line-height: 20px;
+  text-align: justify;
+}
+/* line 40, ../sass/custom.scss */
+p span {
+  padding-left: 40px;
+  font-style: italic;
+  display: inline-block;
+}
+/* line 45, ../sass/custom.scss */
+p span a {
+  color: #5156d1;
+}
+
+/* line 51, ../sass/custom.scss */
+h1 {
+  font-family: "Alegreya", sans-serif;
+  word-spacing: 8px;
+}
+/* line 63, ../sass/custom.scss */
+h1 a {
+  color: #333;
+}
+/* line 66, ../sass/custom.scss */
+h1 a:hover {
+  color: #333;
+}
+
+/* line 71, ../sass/custom.scss */
+h2 {
+  font-size: 2em;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* line 75, ../sass/custom.scss */
+h3 {
+  margin: 20px 0 10px 0;
+}
+h3 a {
+  position: relative;
+}
+h3 a:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  width: 0;
+  background-color: black;
+  -webkit-transition: width 0.25s ease;
+  -moz-transition: width 0.25s ease;
+  -o-transition: width 0.25s ease;
+  transition: width 0.25s ease;
+}
+h3 a:hover:after {
+  width: 100%;
+}
+
+h4 {
+  font-size: 1.05em;
+  margin-top: 5px;
+}
+
+/* line 79, ../sass/custom.scss */
+header {
+  background-color: #333;
+  height: 100px;
+  line-height: 100px;
+  font-size: 17px;
+  text-align: center;
+  text-transform: uppercase;
+}
+/* line 87, ../sass/custom.scss */
+header #menu {
+  display: inline-block;
+}
+/* line 90, ../sass/custom.scss */
+header #menu li {
+  float: left;
+  list-style-type: none;
+}
+/* line 94, ../sass/custom.scss */
+header #menu li a {
+  color: white;
+  padding: 10px 25px 10px 25px;
+  position: relative;
+}
+/* line 99, ../sass/custom.scss */
+header #menu li a:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  width: 0;
+  background-color: white;
+  -webkit-transition: width 0.5s ease;
+  -moz-transition: width 0.5s ease;
+  -o-transition: width 0.5s ease;
+  transition: width 0.5s ease;
+}
+/* line 109, ../sass/custom.scss */
+header #menu li a:hover:after, header #menu li a.active:after {
+  width: 100%;
+}
+
+/* line 116, ../sass/custom.scss */
+#wrapper {
+  width: 100%;
+  text-align: center;
+}
+
+#cover {
+  width: 100%;
+  height: calc(100% - 100px);
+  background: url("../../assets/images/art/still-life/2-(2).JPG") no-repeat center center;
+  background-size: cover;
+}
+
+#cover a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: white;
+}
+#cover h1 {
+  font-family: "Bico", "TT-Bluescreens", "Alegreya", sans-serif;
+  font-weight: 200;
+  color: white;
+  letter-spacing: 0.2em;
+  font-size: 80px;
+  text-transform: uppercase;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  margin-top: -25px;
+  width: 100%;
+}
+#cover h2 {
+  font-family: "Slabo 27px", serif;
+  color: white;
+  font-weight: 200;
+  letter-spacing: 0.2em;
+  text-align: center;
+  position: absolute;
+  text-transform: uppercase;
+  top: 50%;
+  margin-top: -60px;
+  width: 100%;
+}
+
+/* line 121, ../sass/custom.scss */
+#container {
+  display: inline-block;
+  color: #222;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  text-align: left;
+  max-width: 960px;
+  width: 100%;
+}
+
+.subsections {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: stretch;
+}
+.subsections section {
+  display: flex;
+  flex: 1 0 200px;
+  flex-direction: column;
+  max-width: 100%;
+  text-align: center;
+  -webkit-transition: background 0.5s ease;
+  -moz-transition: background 0.5s ease;
+  -o-transition: background 0.5s ease;
+  transition: background 0.5s ease;
+}
+.subsections section:hover {
+  background-color: #dfdfd5;
+}
+.subsections section:first-of-type {
+  margin-left: 0;
+}
+.subsections section:last-of-type {
+  margin-right: 0;
+}
+.subsections section a {
+  display: inline-block;
+  padding: 10px;
+}
+.subsections section img {
+  max-width: 100%;
+  max-height: 240px;
+}
+.subsections section span {
+  display: block;
+  width: 100%;
+  height: 240px;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+img.big {
+  max-width: 100%;
+  max-height: 800px;
+}
+img.small {
+  max-width: 30%;
+}
+
+/* line 131, ../sass/custom.scss */
+.image img {
+  margin-bottom: 10px;
+}
+/* line 135, ../sass/custom.scss */
+.image .big {
+  max-width: 960px;
+}
+/* line 139, ../sass/custom.scss */
+.image .half {
+  max-width: 480px;
+  float: left;
+}
+/* line 143, ../sass/custom.scss */
+.image .third {
+  max-width: 320px;
+  float: left;
+}
+/* line 148, ../sass/custom.scss */
+.image .detail {
+  max-width: 600px;
+  float: right;
+}
+/* line 153, ../sass/custom.scss */
+.image p {
+  margin-left: 5px;
+}
+
+/* line 158, ../sass/custom.scss */
+#gallery {
+  width: 960px;
+  overflow: hidden;
+  position: relative;
+  height: 250px;
+  margin-bottom: 20px;
+}
+/* line 165, ../sass/custom.scss */
+#gallery #inner {
+  width: 2060px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* line 173, ../sass/custom.scss */
+#gallery img {
+  max-height: 250px;
+  cursor: pointer;
+  float: left;
+  margin-left: 10px;
+  opacity: 0.7;
+  -webkit-transition: opacity 0.3s;
+  -moz-transition: opacity 0.3s;
+  -o-transition: opacity 0.3s;
+  transition: opacity 0.3s;
+}
+/* line 181, ../sass/custom.scss */
+#gallery img:first-of-type {
+  margin-left: 0px;
+}
+/* line 184, ../sass/custom.scss */
+#gallery img.active, #gallery img:hover {
+  opacity: 1;
+}
+
+/* line 189, ../sass/custom.scss */
+#prev, #next {
+  width: 30px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  cursor: pointer;
+  -webkit-transition: background-color 0.3s;
+  -moz-transition: background-color 0.3s;
+  -o-transition: background-color 0.3s;
+  transition: background-color 0.3s;
+}
+
+/* line 197, ../sass/custom.scss */
+#prev:hover, #next:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* line 200, ../sass/custom.scss */
+#next {
+  background: url("../images/next.png") no-repeat center center;
+  right: 0;
+}
+
+/* line 204, ../sass/custom.scss */
+#prev {
+  background: url("../images/prev.png") no-repeat center center;
+  left: 0;
+  display: none;
+}
+
+/* line 210, ../sass/custom.scss */
+table {
+  border-spacing: 10px;
+  border-collapse: separate;
+}
+/* line 214, ../sass/custom.scss */
+table td {
+  vertical-align: top;
+}
+/* line 218, ../sass/custom.scss */
+table td:first-of-type {
+  width: 120px;
+}
+/* line 221, ../sass/custom.scss */
+table td:nth-of-type(2) {
+  width: 500px;
+}
+/* line 224, ../sass/custom.scss */
+table td:nth-of-type(3) {
+  width: 160px;
+}
+
+/* line 230, ../sass/custom.scss */
+form fieldset {
+  border: none;
+}
+/* line 233, ../sass/custom.scss */
+form h3 {
+  margin-bottom: 20px;
+  margin-top: 40px;
+}
+/* line 237, ../sass/custom.scss */
+form input, form textarea {
+  background-color: #333;
+  color: white;
+  width: 350px;
+  border: none;
+  padding: 4px 8px 4px 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  outline: none;
+  font-family: "Droid Serif", serif;
+  font-size: 14px;
+}
+/* line 249, ../sass/custom.scss */
+form textarea {
+  height: 60px;
+}
+/* line 252, ../sass/custom.scss */
+form input[type=submit] {
+  width: auto;
+  padding: 4px 15px 4px 15px;
+  margin-left: 100px;
+  cursor: pointer;
+  -webkit-transition: background-color 0.3s;
+  -moz-transition: background-color 0.3s;
+  -o-transition: background-color 0.3s;
+  transition: background-color 0.3s;
+}
+/* line 259, ../sass/custom.scss */
+form input[type=submit]:hover {
+  background-color: #666;
+}
+/* line 262, ../sass/custom.scss */
+form label {
+  width: 100px;
+  float: left;
+  margin-bottom: 10px;
+}
+
+.social i {
+  font-size: 34px;
+}
+
+/* line 269, ../sass/custom.scss */
+/*#linkedin {
+  background: url("../images/linkedin.png") no-repeat center center;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  -webkit-transition: background-image 0.3s;
+  -moz-transition: background-image 0.3s;
+  -o-transition: background-image 0.3s;
+  transition: background-image 0.3s;
+  margin-left: 5px;
+}
+
+/* line 277, ../sass/custom.scss */
+/*#linkedin:hover {
+  background-image: url("../images/linkedin_hover.png");
+}*/
+
+/* line 281, ../sass/custom.scss */
+.errormessages {
+  color: #c1261a;
+  list-style-position: inside;
+  margin-bottom: 20px;
+}
+
+/* line 287, ../sass/custom.scss */
+.clear {
+  clear: both;
+}
+
+/* Fix lower resolutions and mobile */
+@media (max-width: 980px) {
+  header #menu li a {
+    padding: 10px 10px;
+  }
+}
