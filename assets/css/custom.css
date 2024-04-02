@@ -57,7 +57,7 @@ p {
   text-align: justify;
 }
 /* line 40, ../sass/custom.scss */
-p span {
+p span, td span {
   padding-left: 40px;
   font-style: italic;
   display: inline-block;
