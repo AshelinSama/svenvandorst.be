@@ -347,9 +347,15 @@ main { display: block; padding-top: var(--header-h); }
 .site-footer a { text-decoration: none; }
 /* The menu and the social links as horizontal rows, centred like the wordmark below them */
 .footer-top {
-  display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
+  display: flex; flex-direction: column; align-items: center; gap: clamp(1.5rem, 2.5vw, 2rem);
   padding-bottom: clamp(1.75rem, 3vw, 2.25rem);
   border-bottom: 1px solid var(--line-dark);
+}
+.footer-group { display: flex; flex-direction: column; align-items: center; }
+.footer-label {
+  margin: 0 0 .7rem;
+  font: 500 .6rem/1 var(--font-sans); letter-spacing: .28em; text-transform: uppercase;
+  color: rgba(244, 240, 232, .4);
 }
 .footer-links { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem clamp(1.25rem, 2.2vw, 2.1rem); }
 .footer-links a {
@@ -454,6 +460,7 @@ main { display: block; padding-top: var(--header-h); }
 .works::after { content: ""; flex: 10000 1 0; }
 .works > .work { flex: calc(var(--r) * 1000) 1 calc(var(--r) * var(--row-h)); }
 .works--small { --row-h: clamp(170px, 19vw, 250px); }
+.works--fill::after { display: none; }   /* a single row (Recent work) stretches across the full width */
 
 /* Series cards (navigation tiles may use a cropped detail) */
 .series-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2.2vw, 2rem); }
