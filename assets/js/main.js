@@ -12,10 +12,25 @@
     next: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h17M14 6l6 6-6 6"/></svg>',
   };
 
-  /* ---------- Homepage opening: wait for the fonts, allow skipping ---------- */
+  // Resolves once the images inside el have loaded (or failed), but waits at most `max` ms.
+  // Used so an animation reveals the actual picture instead of an empty frame that the
+  // photo then pops into a moment later (very visible on phones).
+  const imagesReady = (el, max = 2500) => {
+    const pending = [...el.querySelectorAll('img')].filter((i) => !i.complete);
+    if (!pending.length) return Promise.resolve();
+    const loads = pending.map((i) => new Promise((done) => {
+      i.addEventListener('load', () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(done), { once: true });
+      i.addEventListener('error', done, { once: true });
+      i.loading = 'eager';   // about to be shown: start loading now
+    }));
+    return Promise.race([Promise.all(loads), new Promise((r) => setTimeout(r, max))]);
+  };
+
+  /* ---------- Homepage opening: wait for the fonts and the painting, allow skipping ---------- */
   if (root.classList.contains('intro-wait')) {
     const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
-    Promise.race([fonts, new Promise((r) => setTimeout(r, 1500))])
+    const painting = document.querySelector('.hero__media');
+    Promise.race([Promise.all([fonts, painting ? imagesReady(painting) : null]), new Promise((r) => setTimeout(r, 2500))])
       .then(() => root.classList.remove('intro-wait'));
   }
   if (root.classList.contains('intro-full')) {
@@ -87,11 +102,14 @@
         .filter((e) => e.isIntersecting)
         .sort((a, b) => (a.boundingClientRect.top - b.boundingClientRect.top) ||
                         (a.boundingClientRect.left - b.boundingClientRect.left))
-        .forEach((e, n) => { io.unobserve(e.target); reveal(e.target, n); });
+        .forEach((e, n) => {
+          io.unobserve(e.target);
+          imagesReady(e.target).then(() => reveal(e.target, n));   // reveal the picture, not an empty frame
+        });
     }, { rootMargin: '0px 0px -7% 0px', threshold: 0.08 });
     revealEls.forEach((el) => io.observe(el));
   } else {
-    revealEls.forEach((el) => reveal(el, 0));
+    revealEls.forEach((el) => reveal(el, 0));   // nothing is hidden without motion: no need to wait
   }
 
   /* ---------- Lightbox ---------- */
