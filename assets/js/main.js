@@ -10,6 +10,8 @@
   const ICON = {
     close: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     next: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h17M14 6l6 6-6 6"/></svg>',
+    zoomIn: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20M10.5 7.5v6M7.5 10.5h6"/></svg>',
+    zoomOut: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20M7.5 10.5h6"/></svg>',
   };
 
   // Resolves once the images inside el have loaded (or failed), but waits at most `max` ms.
@@ -112,7 +114,9 @@
     revealEls.forEach((el) => reveal(el, 0));   // nothing is hidden without motion: no need to wait
   }
 
-  /* ---------- Lightbox ---------- */
+  /* ---------- Lightbox, with zoom ----------
+     Desktop: click the image to zoom in on that spot, drag or scroll to move/zoom, click again to zoom out.
+     Phones: pinch to zoom, drag to move, double-tap to zoom in or out, swipe (when not zoomed) for next. */
   const links = [...document.querySelectorAll('[data-lightbox]')];
   if (links.length) {
     const groups = {};
@@ -127,21 +131,68 @@
     lb.innerHTML = `
       <div class="lightbox__bar">
         <span class="lightbox__count" aria-live="polite"></span>
-        <button class="lightbox__btn lightbox__close" type="button" aria-label="Close">${ICON.close}</button>
+        <div class="lightbox__tools">
+          <button class="lightbox__btn lightbox__zoom" type="button" aria-label="Zoom in">${ICON.zoomIn}</button>
+          <button class="lightbox__btn lightbox__close" type="button" aria-label="Close">${ICON.close}</button>
+        </div>
       </div>
       <button class="lightbox__btn lightbox__prev" type="button" aria-label="Previous image">${ICON.next}</button>
-      <div class="lightbox__stage"><img class="lightbox__img" alt=""></div>
+      <div class="lightbox__stage"><img class="lightbox__img" alt="" draggable="false"></div>
       <div class="lightbox__caption"></div>
       <button class="lightbox__btn lightbox__next" type="button" aria-label="Next image">${ICON.next}</button>`;
     body.appendChild(lb);
 
     const img = lb.querySelector('.lightbox__img');
+    const stage = lb.querySelector('.lightbox__stage');
     const cap = lb.querySelector('.lightbox__caption');
     const count = lb.querySelector('.lightbox__count');
     const closeBtn = lb.querySelector('.lightbox__close');
+    const zoomBtn = lb.querySelector('.lightbox__zoom');
     let list = [];
     let index = 0;
     let opener = null;
+
+    /* zoom: the image is scaled by `scale` around its centre, then moved by (tx, ty) */
+    let scale = 1;
+    let tx = 0;
+    let ty = 0;
+    const zoomed = () => scale > 1.01;
+    // how far in we can go: up to the photo's real resolution, at least 2x, at most 5x
+    const maxScale = () => Math.max(2, Math.min(5, (img.naturalWidth || 0) / (img.offsetWidth || 1)));
+    const clampPan = () => {
+      const mx = Math.max(0, (img.offsetWidth * scale - stage.clientWidth) / 2);
+      const my = Math.max(0, (img.offsetHeight * scale - stage.clientHeight) / 2);
+      tx = Math.min(mx, Math.max(-mx, tx));
+      ty = Math.min(my, Math.max(-my, ty));
+    };
+    const applyZoom = () => {
+      lb.classList.toggle('is-zoomed', zoomed());
+      img.style.transform = zoomed() ? `translate(${tx}px, ${ty}px) scale(${scale})` : '';
+      zoomBtn.setAttribute('aria-label', zoomed() ? 'Zoom out' : 'Zoom in');
+      zoomBtn.innerHTML = zoomed() ? ICON.zoomOut : ICON.zoomIn;
+    };
+    // zoom to `s` while keeping the screen point (px, py) under the finger or cursor
+    const zoomAt = (s, px, py) => {
+      const next = Math.min(maxScale(), Math.max(1, s));
+      const r = stage.getBoundingClientRect();
+      const cx = px - (r.left + r.width / 2);
+      const cy = py - (r.top + r.height / 2);
+      tx = cx - (cx - tx) * (next / scale);
+      ty = cy - (cy - ty) * (next / scale);
+      scale = next;
+      if (!zoomed()) { scale = 1; tx = 0; ty = 0; }
+      clampPan();
+      applyZoom();
+    };
+    const resetZoom = () => { scale = 1; tx = 0; ty = 0; applyZoom(); };
+    const stageCentre = () => {
+      const r = stage.getBoundingClientRect();
+      return [r.left + r.width / 2, r.top + r.height / 2];
+    };
+    const toggleZoom = (px, py) => {
+      if (zoomed()) resetZoom();
+      else zoomAt(maxScale(), ...(px === undefined ? stageCentre() : [px, py]));
+    };
 
     const line = (text, cls) => {
       const s = document.createElement('span');
@@ -154,6 +205,7 @@
       index = (i + list.length) % list.length;
       const a = list[index];
       const d = a.dataset;
+      resetZoom();
       img.classList.remove('is-loaded');
       img.alt = d.title || d.caption || '';
       img.onload = () => img.classList.add('is-loaded');
@@ -186,7 +238,7 @@
     const close = () => {
       lb.classList.remove('is-open');
       body.classList.remove('lb-open');
-      setTimeout(() => { lb.hidden = true; img.removeAttribute('src'); }, 450);
+      setTimeout(() => { lb.hidden = true; img.removeAttribute('src'); resetZoom(); }, 450);
       if (opener) opener.focus({ preventScroll: true });
     };
 
@@ -196,19 +248,19 @@
       open(g, groups[g].indexOf(a));
     }));
     closeBtn.addEventListener('click', close);
+    zoomBtn.addEventListener('click', () => toggleZoom());
     lb.querySelector('.lightbox__prev').addEventListener('click', () => show(index - 1));
     lb.querySelector('.lightbox__next').addEventListener('click', () => show(index + 1));
-    let swiped = false;
-    lb.addEventListener('click', (e) => {
-      if (swiped) { swiped = false; return; }
-      if (e.target === lb || e.target.classList.contains('lightbox__stage')) close();
-    });
+    // a click on the dark background around the stage closes
+    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
 
     document.addEventListener('keydown', (e) => {
       if (lb.hidden) return;
       if (e.key === 'Escape') close();
-      else if (e.key === 'ArrowRight') show(index + 1);
-      else if (e.key === 'ArrowLeft') show(index - 1);
+      else if (e.key === 'ArrowRight' && !zoomed()) show(index + 1);
+      else if (e.key === 'ArrowLeft' && !zoomed()) show(index - 1);
+      else if (e.key === '+' || e.key === '=') zoomAt(scale * 1.5, ...stageCentre());
+      else if (e.key === '-') zoomAt(scale / 1.5, ...stageCentre());
       else if (e.key === 'Tab') {
         const focusables = [...lb.querySelectorAll('button')].filter((b) => b.offsetParent !== null);
         const first = focusables[0];
@@ -218,15 +270,85 @@
       }
     });
 
-    // swipe
-    let x0 = null;
-    lb.addEventListener('pointerdown', (e) => { x0 = e.clientX; });
-    lb.addEventListener('pointerup', (e) => {
-      if (x0 === null) return;
-      const dx = e.clientX - x0;
-      x0 = null;
-      if (Math.abs(dx) > 50 && list.length > 1) { swiped = true; show(index + (dx < 0 ? 1 : -1)); }
+    // scroll wheel / trackpad: zoom on the spot under the cursor
+    stage.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      zoomAt(scale * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY);
+    }, { passive: false });
+    window.addEventListener('resize', () => { if (!lb.hidden) { clampPan(); applyZoom(); } });
+
+    // pointers: drag to move, two fingers to pinch, taps, and swipes for next/previous
+    const pointers = new Map();
+    let gesture = null;
+    let moved = false;
+    let lastTap = 0;
+    const onImage = (x, y) => {
+      const r = img.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    };
+    const tap = (e) => {
+      const hit = onImage(e.clientX, e.clientY);
+      if (e.pointerType === 'mouse') {
+        if (hit) toggleZoom(e.clientX, e.clientY);
+        else if (zoomed()) resetZoom();
+        else close();
+        return;
+      }
+      const now = Date.now();
+      if (hit && now - lastTap < 320) { lastTap = 0; toggleZoom(e.clientX, e.clientY); return; }   // double-tap
+      lastTap = now;
+      if (!hit && !zoomed()) close();
+    };
+    stage.addEventListener('pointerdown', (e) => {
+      if (e.button > 0) return;
+      try { stage.setPointerCapture(e.pointerId); } catch (_) { /* pointer already gone */ }
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      moved = false;
+      if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        gesture = { type: 'pinch', dist: Math.hypot(a.x - b.x, a.y - b.y) || 1, scale };
+      } else {
+        gesture = { type: zoomed() ? 'pan' : 'swipe', x: e.clientX, y: e.clientY, tx, ty };
+      }
     });
+    stage.addEventListener('pointermove', (e) => {
+      if (!pointers.has(e.pointerId) || !gesture) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (gesture.type === 'pinch' && pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        lb.classList.add('is-dragging');
+        zoomAt(gesture.scale * Math.hypot(a.x - b.x, a.y - b.y) / gesture.dist, (a.x + b.x) / 2, (a.y + b.y) / 2);
+        moved = true;
+      } else if (gesture.type === 'pan') {
+        const dx = e.clientX - gesture.x;
+        const dy = e.clientY - gesture.y;
+        if (Math.abs(dx) + Math.abs(dy) > 4) { moved = true; lb.classList.add('is-dragging'); }
+        tx = gesture.tx + dx;
+        ty = gesture.ty + dy;
+        clampPan();
+        applyZoom();
+      } else if (gesture.type === 'swipe' && Math.abs(e.clientX - gesture.x) > 8) {
+        moved = true;
+      }
+    });
+    const endPointer = (e) => {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.delete(e.pointerId);
+      lb.classList.remove('is-dragging');
+      if (e.type === 'pointerup' && gesture && gesture.type !== 'pinch') {
+        const dx = e.clientX - gesture.x;
+        if (gesture.type === 'swipe' && Math.abs(dx) > 50 && list.length > 1) show(index + (dx < 0 ? 1 : -1));
+        else if (!moved) tap(e);
+      }
+      if (!pointers.size) gesture = null;
+      else if (gesture && gesture.type === 'pinch') {   // one finger left after pinching: keep moving
+        const [p] = [...pointers.values()];
+        gesture = { type: 'pan', x: p.x, y: p.y, tx, ty };
+        moved = true;
+      }
+    };
+    stage.addEventListener('pointerup', endPointer);
+    stage.addEventListener('pointercancel', endPointer);
   }
 
   /* ---------- Before / after comparison ---------- */
