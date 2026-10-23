@@ -277,6 +277,11 @@ main { display: block; padding-top: var(--header-h); }
 .logo:hover .logo__name { letter-spacing: .26em; }
 
 .site-nav ul { display: flex; gap: clamp(1.1rem, 2.3vw, 2.4rem); list-style: none; }
+/* on narrower desktop screens the eight items sit a little closer so they still fit next to the logo */
+@media (max-width: 1180px) {
+  .site-nav ul { gap: clamp(.8rem, 1.5vw, 1.1rem); }
+  .site-nav a { letter-spacing: .13em; }
+}
 .site-nav a {
   position: relative; display: block; padding: .55rem 0;
   font: 500 .74rem/1 var(--font-sans);
@@ -936,6 +941,20 @@ main { display: block; padding-top: var(--header-h); }
 .contact-list__label { display: block; font-family: var(--font-serif); font-size: clamp(1.45rem, 2.5vw, 1.95rem); line-height: 1.1; transition: transform .6s var(--ease-out); }
 .contact-list a:hover .contact-list__label { transform: translateX(6px); }
 .contact-list__value { display: block; margin-top: .2rem; font-size: .85rem; color: var(--muted); overflow-wrap: anywhere; }
+
+/* "Notify me": a button that opens a ready-made email to Sven */
+.notify { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 1.5rem; margin-top: clamp(2rem, 4vw, 2.75rem); }
+.notify__text { margin: 0; font-size: .9rem; color: var(--muted); }
+.btn {
+  display: inline-flex; align-items: center; gap: .7rem;
+  padding: 1rem 1.6rem; border-radius: 999px;
+  background: var(--ink); color: var(--paper); text-decoration: none;
+  font: 500 .74rem/1 var(--font-sans); letter-spacing: .18em; text-transform: uppercase;
+  transition: background-color .35s, transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
+}
+.btn .icon { width: 1.05rem; height: 1.05rem; transition: transform .6s var(--ease-out); transform-origin: 50% 10%; }
+.btn:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 12px 24px -12px rgba(44, 74, 142, .55); }
+.btn:hover .icon { transform: rotate(14deg); }
 
 /* 8. Motion ---------------------------------------------------------------- */
 @keyframes rise { from { transform: translateY(112%); } to { transform: none; } }
